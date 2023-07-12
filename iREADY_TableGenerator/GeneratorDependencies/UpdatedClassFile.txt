@@ -1,0 +1,26 @@
+using Freyr.iREADY.IngredientsService.Host.Model.Common;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Freyr.iREADY.IngredientsService.Host.Model.DTOObjects
+{
+    public interface IAreasOfApplication
+    {
+        string AreasOfApplicationName {get; set;}
+        string Description {get; set;}
+    }
+
+    [BsonIgnoreExtraElements]
+    [BsonCollectionAttribute("AreasOfApplication")]
+    public class AreasOfApplication : Document, IAreasOfApplication
+    {
+
+        [BsonElement("areasOfApplicationName")]
+        public string AreasOfApplicationName {get; set;}
+        [BsonElement("description")]
+        public string Description {get; set;}
+    }
+}

@@ -1,0 +1,20 @@
+using Freyr.iREADY.IngredientsService.Host.Model.Common;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Freyr.iREADY.IngredientsService.Host.Model.DTOObjects
+{
+    public interface ITableName
+    {
+    }
+
+    [BsonIgnoreExtraElements]
+    [BsonCollectionAttribute("TableName")]
+    public class TableName : Document, ITableName
+    {
+
+    }
+}

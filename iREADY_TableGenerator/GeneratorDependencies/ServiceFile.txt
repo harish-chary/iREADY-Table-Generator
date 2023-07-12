@@ -1,0 +1,165 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Freyr.iREADY.IngredientsService.Host.DataAccessLayer;
+using Freyr.iREADY.IngredientsService.Host.Logger;
+using Freyr.iREADY.IngredientsService.Host.Model.DTOObjects;
+using Freyr.iREADY.IngredientsService.Host.Model.Response;
+using MongoDB.Driver;
+
+namespace Freyr.iREADY.IngredientsService.Host.BusinessAccessLayer.RulesMasterDataService
+{
+    public interface IClassNameService
+    {
+        IResponseData<List<ClassName>> GetAllClassName();
+        IResponseData<bool> InsertClassName(ClassName VariableName);
+        IResponseData<bool> UpdateClassName(ClassName VariableName);
+        IResponseData<bool> DeleteClassNameById(string id, string modifiedBy, bool isactive);
+    }
+
+    public class ClassNameService : IClassNameService
+    {
+        private readonly IMongoRepository<ClassName> _mongoRepository = null;
+        private ClassName _VariableName;
+
+        public ClassNameService(IMongoRepository<ClassName> mongoRepository)
+        {
+            _mongoRepository = mongoRepository;
+            _VariableName = new ClassName();
+        }
+
+        public IResponseData<List<ClassName>> GetAllClassName()
+        {
+            IResponseData<List<ClassName>> responseData = new ResponseData<List<ClassName>>();
+
+            try
+            {
+                List<ClassName> VariableNameList = _mongoRepository.GetMany().ToList();
+                responseData.Data = VariableNameList;
+                responseData.StatusCode = "";
+                responseData.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                ComLog4net.Log.Error(ex.Message, ex);
+                responseData.StatusCode = "";
+                responseData.Message = "Error Occured";
+            }
+            finally
+            {
+                responseData.InitializeEndTime();
+            }
+
+            return responseData;
+        }
+
+        public IResponseData<bool> InsertClassName(ClassName VariableName)
+        {
+
+            IResponseData<bool> responseData = new ResponseData<bool>();
+            try
+            {
+
+                //InitialInsert
+
+                _VariableName.CreatedBy = VariableName.CreatedBy;
+                _VariableName.CreatedDate = DateTime.UtcNow;
+                _mongoRepository.InsertOne(_VariableName);
+                responseData.Data = true;
+                responseData.StatusCode = "";
+                responseData.IsSuccess = true;
+
+            }
+            catch (Exception ex)
+            {
+                ComLog4net.Log.Error(ex.Message, ex);
+                responseData.StatusCode = "";
+                responseData.Message = "Error Occured";
+                //throw;          
+            }
+            finally
+            {
+                responseData.InitializeEndTime();
+            }
+
+            return responseData;
+        }
+
+        public IResponseData<bool> UpdateClassName(ClassName VariableName)
+        {
+
+            IResponseData<bool> responseData = new ResponseData<bool>();
+            try
+            {
+                if (VariableName.Id.ToString() == null)
+                    throw new ArgumentNullException("id");
+
+                //var objectId = new ObjectId(regionReq.Id);
+                var filter = Builders<ClassName>.Filter.Eq(p => p.Id, VariableName.Id);
+
+                var update = Builders<ClassName>.Update
+                    //SecondInsert
+                    .Set(p => p.ModifiedBy, VariableName.ModifiedBy)
+                    .Set(p => p.ModifiedDate, DateTime.UtcNow);
+
+                var result = _mongoRepository.FindOneAndUpdate(filter, update);
+                responseData.Data = true;
+                responseData.StatusCode = "";
+                responseData.IsSuccess = true;
+
+            }
+            catch (Exception ex)
+            {
+                ComLog4net.Log.Error(ex.Message, ex);
+                responseData.StatusCode = "";
+                responseData.Message = "Error Occured";
+                //throw;          
+            }
+            finally
+            {
+                responseData.InitializeEndTime();
+            }
+
+            return responseData;
+        }
+
+        public IResponseData<bool> DeleteClassNameById(string id, string modifiedBy, bool isactive)
+        {
+
+            IResponseData<bool> responseData = new ResponseData<bool>();
+            try
+            {
+                if (id == null)
+                    throw new ArgumentNullException("id");
+
+                var filter = Builders<ClassName>.Filter.Eq(p => p.Id, id);
+
+                var update = Builders<ClassName>.Update
+                   .Set(p => p.IsDelete, !isactive)
+                   .Set(p => p.ModifiedBy, modifiedBy)
+                   .Set(p => p.ModifiedDate, DateTime.UtcNow);
+
+                _mongoRepository.FindOneAndUpdate(filter, update);
+                responseData.Data = true;
+                responseData.StatusCode = "";
+                responseData.IsSuccess = true;
+
+            }
+            catch (Exception ex)
+            {
+                ComLog4net.Log.Error(ex.Message, ex);
+                responseData.StatusCode = "";
+                responseData.Message = "Error Occured";
+                //throw;          
+            }
+            finally
+            {
+                responseData.InitializeEndTime();
+            }
+            return responseData;
+        }
+
+    }
+
+}

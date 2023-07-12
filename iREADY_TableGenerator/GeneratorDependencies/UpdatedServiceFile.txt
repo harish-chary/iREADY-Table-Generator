@@ -1,0 +1,168 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Freyr.iREADY.IngredientsService.Host.DataAccessLayer;
+using Freyr.iREADY.IngredientsService.Host.Logger;
+using Freyr.iREADY.IngredientsService.Host.Model.DTOObjects;
+using Freyr.iREADY.IngredientsService.Host.Model.Response;
+using MongoDB.Driver;
+
+namespace Freyr.iREADY.IngredientsService.Host.BusinessAccessLayer.RulesMasterDataService
+{
+    public interface IAreasOfApplicationService
+    {
+        IResponseData<List<AreasOfApplication>> GetAllAreasOfApplication();
+        IResponseData<bool> InsertAreasOfApplication(AreasOfApplication areasOfApplication);
+        IResponseData<bool> UpdateAreasOfApplication(AreasOfApplication areasOfApplication);
+        IResponseData<bool> DeleteAreasOfApplicationById(string id, string modifiedBy, bool isactive);
+    }
+
+    public class AreasOfApplicationService : IAreasOfApplicationService
+    {
+        private readonly IMongoRepository<AreasOfApplication> _mongoRepository = null;
+        private AreasOfApplication _areasOfApplication;
+
+        public AreasOfApplicationService(IMongoRepository<AreasOfApplication> mongoRepository)
+        {
+            _mongoRepository = mongoRepository;
+            _areasOfApplication = new AreasOfApplication();
+        }
+
+        public IResponseData<List<AreasOfApplication>> GetAllAreasOfApplication()
+        {
+            IResponseData<List<AreasOfApplication>> responseData = new ResponseData<List<AreasOfApplication>>();
+
+            try
+            {
+                List<AreasOfApplication> areasOfApplicationList = _mongoRepository.GetMany().ToList();
+                responseData.Data = areasOfApplicationList;
+                responseData.StatusCode = "";
+                responseData.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                ComLog4net.Log.Error(ex.Message, ex);
+                responseData.StatusCode = "";
+                responseData.Message = "Error Occured";
+            }
+            finally
+            {
+                responseData.InitializeEndTime();
+            }
+
+            return responseData;
+        }
+
+        public IResponseData<bool> InsertAreasOfApplication(AreasOfApplication areasOfApplication)
+        {
+
+            IResponseData<bool> responseData = new ResponseData<bool>();
+            try
+            {
+
+                _areasOfApplication.AreasOfApplicationName = areasOfApplication.AreasOfApplicationName;
+                _areasOfApplication.Description = areasOfApplication.Description;
+                //InitialInsert
+
+                _areasOfApplication.CreatedBy = areasOfApplication.CreatedBy;
+                _areasOfApplication.CreatedDate = DateTime.UtcNow;
+                _mongoRepository.InsertOne(_areasOfApplication);
+                responseData.Data = true;
+                responseData.StatusCode = "";
+                responseData.IsSuccess = true;
+
+            }
+            catch (Exception ex)
+            {
+                ComLog4net.Log.Error(ex.Message, ex);
+                responseData.StatusCode = "";
+                responseData.Message = "Error Occured";
+                //throw;          
+            }
+            finally
+            {
+                responseData.InitializeEndTime();
+            }
+
+            return responseData;
+        }
+
+        public IResponseData<bool> UpdateAreasOfApplication(AreasOfApplication areasOfApplication)
+        {
+
+            IResponseData<bool> responseData = new ResponseData<bool>();
+            try
+            {
+                if (areasOfApplication.Id.ToString() == null)
+                    throw new ArgumentNullException("id");
+
+                //var objectId = new ObjectId(regionReq.Id);
+                var filter = Builders<AreasOfApplication>.Filter.Eq(p => p.Id, areasOfApplication.Id);
+
+                var update = Builders<AreasOfApplication>.Update
+                    .Set(p => p.AreasOfApplicationName,areasOfApplication.AreasOfApplicationName)
+                    .Set(p => p.Description,areasOfApplication.Description)
+                    .Set(p => p.ModifiedBy, areasOfApplication.ModifiedBy)
+                    .Set(p => p.ModifiedDate, DateTime.UtcNow);
+
+                var result = _mongoRepository.FindOneAndUpdate(filter, update);
+                responseData.Data = true;
+                responseData.StatusCode = "";
+                responseData.IsSuccess = true;
+
+            }
+            catch (Exception ex)
+            {
+                ComLog4net.Log.Error(ex.Message, ex);
+                responseData.StatusCode = "";
+                responseData.Message = "Error Occured";
+                //throw;          
+            }
+            finally
+            {
+                responseData.InitializeEndTime();
+            }
+
+            return responseData;
+        }
+
+        public IResponseData<bool> DeleteAreasOfApplicationById(string id, string modifiedBy, bool isactive)
+        {
+
+            IResponseData<bool> responseData = new ResponseData<bool>();
+            try
+            {
+                if (id == null)
+                    throw new ArgumentNullException("id");
+
+                var filter = Builders<AreasOfApplication>.Filter.Eq(p => p.Id, id);
+
+                var update = Builders<AreasOfApplication>.Update
+                   .Set(p => p.IsDelete, !isactive)
+                   .Set(p => p.ModifiedBy, modifiedBy)
+                   .Set(p => p.ModifiedDate, DateTime.UtcNow);
+
+                _mongoRepository.FindOneAndUpdate(filter, update);
+                responseData.Data = true;
+                responseData.StatusCode = "";
+                responseData.IsSuccess = true;
+
+            }
+            catch (Exception ex)
+            {
+                ComLog4net.Log.Error(ex.Message, ex);
+                responseData.StatusCode = "";
+                responseData.Message = "Error Occured";
+                //throw;          
+            }
+            finally
+            {
+                responseData.InitializeEndTime();
+            }
+            return responseData;
+        }
+
+    }
+
+}

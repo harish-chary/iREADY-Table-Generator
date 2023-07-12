@@ -1,0 +1,44 @@
+<div *ngIf="isAddClassName === true;then addandUpdateClassName else viewClassName"></div>	
+<ng-template #addandUpdateClassName>	
+    <p-card>	
+        <div class="col-md-12 p-0">	
+            <div class="row">	
+                <!-- First Insert -->
+                    <div class="col-md-12 text-center">	
+                        <button  type="button" class="b-width-85 m-r-10 fc-btn"	
+                            (click)="SaveAndUpdateClassName(isaction==true?'Add':'Edit')">{{isaction==true?'Add':'Update'}}</button>	
+                        <button  type="button" class="b-width-85 m-r-10 fc-btn"  (click)="onClassNameClose()">Close</button>	
+                    </div>	
+                </div>	
+            </div>	
+    </p-card>	
+</ng-template>	
+<ng-template #viewClassName>	
+    <p-card>	
+        <div class="row">	
+
+            </div>
+            <div class="row justify-content-end">	
+            <div class="col-md-6 m-b-10 text-right">	
+                <p-button label="Add ClassName" icon="pi pi-plus" iconPos="left"	
+                    (onClick)="AddAndUpdateClassName('Add')" class="m-r-10"></p-button>	
+            </div>	
+            </div>
+        <p-table [value]="VariableName">	
+            <ng-template pTemplate="header">	
+                <tr>	
+                    <!-- Second Insert -->	
+                    <th>Actions</th>	
+                </tr>	
+            </ng-template>	
+            <ng-template pTemplate="body" let-VariableName>	
+                <tr>	
+                    <!-- Third Insert -->	
+                    <td><p-splitButton label="Actions" [model]="ClassNameItems"	
+                            (onDropdownClick)="HandleActionsClickClassName(VariableName,'ClassName')"	
+                            styleClass="p-button-raised mr-2 mb-2"></p-splitButton></td>	
+                </tr>	
+            </ng-template>	
+        </p-table>	
+    </p-card>	
+</ng-template>

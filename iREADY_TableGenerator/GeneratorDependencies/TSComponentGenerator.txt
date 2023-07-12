@@ -1,0 +1,100 @@
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { MenuItem } from 'primeng/api';
+import { ClassName } from 'src/app/cosmetics/models/master-data/FileName';
+import { InActiveComponent } from 'src/app/cosmetics/shared/in-active/in-active.component';
+import { AppService } from 'src/app/shared/services/env-config/app.service';
+import { IreadyApiService } from 'src/app/shared/services/env-config/iready-api.service';
+
+@Component({
+  selector: 'app-FileName',
+  templateUrl: './FileName.component.html',
+  styleUrls: ['./FileName.component.scss']
+})
+export class ClassNameComponent implements OnInit{
+  
+  VariableName: any[] = [];
+  isAddClassName: boolean = false;
+  public selectedClassName: ClassName = new ClassName();
+  public objClassName: ClassName = new ClassName();
+  ClassNameItems: MenuItem[];
+  modalOptions: NgbModalOptions;
+  modalReference: NgbModalRef;
+  isaction: boolean = true;
+
+  constructor(public _appService: AppService, private ireadyApi: IreadyApiService, private router: Router, private modalService: NgbModal) {}
+
+  ngOnInit(): void {
+    this._appService.setHeaderUserName(this.ireadyApi.getUserName());
+    this._appService.setHeaderShow(true);
+    this._appService.setHeaderTitle("Regulations");
+    this.GetAllClassName();
+      this.ClassNameItems = [
+        {
+          label: 'Update', icon: 'pi pi-refresh', command: () => {
+            debugger;
+            this.AddAndUpdateClassName('Edit');
+          }
+        },
+        {
+          label: 'Delete', icon: 'pi pi-times', command: () => {
+            this.DeleteClassName();
+          }
+        }
+      ];
+  }
+  public HandleActionsClickClassName(event, type) {
+    if (type == "ClassName") {
+      this.selectedClassName = event;
+    }
+  }
+  SaveAndUpdateClassName(type) {
+    if (type != "Add") {
+      debugger;
+      this.ireadyApi.postData("MasterData/UpdateClassName", this.objClassName).toPromise().then((resp: any) => {
+        this.VariableName = resp.data;
+        this.GetAllClassName()
+      })
+    }
+    else {
+      this.ireadyApi.postData("MasterData/InsertClassName", this.objClassName).toPromise().then((resp: any) => {
+        this.VariableName = resp.data;
+        this.GetAllClassName()
+      })
+    }
+  }
+  onClassNameClose()
+  {
+    this.isAddClassName = false;
+  }
+  AddAndUpdateClassName(type) {
+    this.isAddClassName = true;
+    if (type != "Add") {
+      this.isaction = false;
+      this.objClassName = this.selectedClassName;
+    }
+    else {
+      this.isaction = true;
+      this.objClassName = new ClassName();
+    }
+  }
+  GetAllClassName() {
+    this.ireadyApi.getData("MasterData/GetAllClassName").toPromise().then((resp: any) => {
+      this.VariableName = resp.data;
+      this.isAddClassName = false;
+    })
+  }
+  getVariableNameName(data) {
+    this.ireadyApi.setStorage("VariableName", data);
+    this.router.navigate(['/cometics/ingredientsregulations/regulations']);
+  }
+  DeleteClassName() {
+    this.modalReference = this.modalService.open(InActiveComponent, { size: 'sm' });
+    this.modalReference.componentInstance.objModel = this.selectedClassName;
+    this.modalReference.componentInstance.moduleType = 'ClassName';
+    this.modalReference.result.then((result) => {
+    this.GetAllClassName();
+  });
+  }
+}

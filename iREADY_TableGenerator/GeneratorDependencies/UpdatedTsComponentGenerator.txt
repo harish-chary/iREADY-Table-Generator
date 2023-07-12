@@ -1,0 +1,100 @@
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { MenuItem } from 'primeng/api';
+import { AreasOfApplication } from 'src/app/cosmetics/models/master-data/areas-of-application';
+import { InActiveComponent } from 'src/app/cosmetics/shared/in-active/in-active.component';
+import { AppService } from 'src/app/shared/services/env-config/app.service';
+import { IreadyApiService } from 'src/app/shared/services/env-config/iready-api.service';
+
+@Component({
+  selector: 'app-areas-of-application',
+  templateUrl: './areas-of-application.component.html',
+  styleUrls: ['./areas-of-application.component.scss']
+})
+export class AreasOfApplicationComponent implements OnInit{
+  
+  areasOfApplication: any[] = [];
+  isAddAreasOfApplication: boolean = false;
+  public selectedAreasOfApplication: AreasOfApplication = new AreasOfApplication();
+  public objAreasOfApplication: AreasOfApplication = new AreasOfApplication();
+  AreasOfApplicationItems: MenuItem[];
+  modalOptions: NgbModalOptions;
+  modalReference: NgbModalRef;
+  isaction: boolean = true;
+
+  constructor(public _appService: AppService, private ireadyApi: IreadyApiService, private router: Router, private modalService: NgbModal) {}
+
+  ngOnInit(): void {
+    this._appService.setHeaderUserName(this.ireadyApi.getUserName());
+    this._appService.setHeaderShow(true);
+    this._appService.setHeaderTitle("Regulations");
+    this.GetAllAreasOfApplication();
+      this.AreasOfApplicationItems = [
+        {
+          label: 'Update', icon: 'pi pi-refresh', command: () => {
+            debugger;
+            this.AddAndUpdateAreasOfApplication('Edit');
+          }
+        },
+        {
+          label: 'Delete', icon: 'pi pi-times', command: () => {
+            this.DeleteAreasOfApplication();
+          }
+        }
+      ];
+  }
+  public HandleActionsClickAreasOfApplication(event, type) {
+    if (type == "AreasOfApplication") {
+      this.selectedAreasOfApplication = event;
+    }
+  }
+  SaveAndUpdateAreasOfApplication(type) {
+    if (type != "Add") {
+      debugger;
+      this.ireadyApi.postData("IngMasterData/UpdateAreasOfApplication", this.objAreasOfApplication).toPromise().then((resp: any) => {
+        this.areasOfApplication = resp.data;
+        this.GetAllAreasOfApplication()
+      })
+    }
+    else {
+      this.ireadyApi.postData("IngMasterData/InsertAreasOfApplication", this.objAreasOfApplication).toPromise().then((resp: any) => {
+        this.areasOfApplication = resp.data;
+        this.GetAllAreasOfApplication()
+      })
+    }
+  }
+  onAreasOfApplicationClose()
+  {
+    this.isAddAreasOfApplication = false;
+  }
+  AddAndUpdateAreasOfApplication(type) {
+    this.isAddAreasOfApplication = true;
+    if (type != "Add") {
+      this.isaction = false;
+      this.objAreasOfApplication = this.selectedAreasOfApplication;
+    }
+    else {
+      this.isaction = true;
+      this.objAreasOfApplication = new AreasOfApplication();
+    }
+  }
+  GetAllAreasOfApplication() {
+    this.ireadyApi.getData("IngMasterData/GetAllAreasOfApplication").toPromise().then((resp: any) => {
+      this.areasOfApplication = resp.data;
+      this.isAddAreasOfApplication = false;
+    })
+  }
+  getareasOfApplicationName(data) {
+    this.ireadyApi.setStorage("areasOfApplication", data);
+    this.router.navigate(['/cometics/ingredientsregulations/regulations']);
+  }
+  DeleteAreasOfApplication() {
+    this.modalReference = this.modalService.open(InActiveComponent, { size: 'sm' });
+    this.modalReference.componentInstance.objModel = this.selectedAreasOfApplication;
+    this.modalReference.componentInstance.moduleType = 'AreasOfApplication';
+    this.modalReference.result.then((result) => {
+    this.GetAllAreasOfApplication();
+  });
+  }
+}

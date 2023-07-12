@@ -1,0 +1,62 @@
+<div *ngIf="isAddAreasOfApplication === true;then addandUpdateAreasOfApplication else viewAreasOfApplication"></div>	
+<ng-template #addandUpdateAreasOfApplication>	
+    <p-card>	
+        <div class="col-md-12 p-0">	
+            <div class="row">	
+                <div class="col-md-4">
+                    <div class="form-group field">
+                        <label class="block">AreasOfApplicationName</label>
+                        <input type="string" [(ngModel)]="objAreasOfApplication.areasOfApplicationName"pInputText/>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group field">
+                        <label class="block">Description</label>
+                        <input type="string" [(ngModel)]="objAreasOfApplication.description"pInputText/>
+                    </div>
+                </div>
+
+                <!-- First Insert -->
+                    <div class="col-md-12 text-center">	
+                        <button  type="button" class="b-width-85 m-r-10 fc-btn"	
+                            (click)="SaveAndUpdateAreasOfApplication(isaction==true?'Add':'Edit')">{{isaction==true?'Add':'Update'}}</button>	
+                        <button  type="button" class="b-width-85 m-r-10 fc-btn"  (click)="onAreasOfApplicationClose()">Close</button>	
+                    </div>	
+                </div>	
+            </div>	
+    </p-card>	
+</ng-template>	
+<ng-template #viewAreasOfApplication>	
+    <p-card>	
+        <div class="row">	
+
+            </div>
+            <div class="row justify-content-end">	
+            <div class="col-md-6 m-b-10 text-right">	
+                <p-button label="Add AreasOfApplication" icon="pi pi-plus" iconPos="left"	
+                    (onClick)="AddAndUpdateAreasOfApplication('Add')" class="m-r-10"></p-button>	
+            </div>	
+            </div>
+        <p-table [value]="areasOfApplication">	
+            <ng-template pTemplate="header">	
+                <tr>	
+                    <th>AreasOfApplicationName</th>
+                    <th>Description</th>
+                    <!-- Second Insert -->	
+                    <th>Actions</th>	
+                </tr>	
+            </ng-template>	
+            <ng-template pTemplate="body" let-areasOfApplication>	
+                <tr>	
+                    <td>{{areasOfApplication.areasOfApplicationName}}</td>
+                    <td>{{areasOfApplication.description}}</td>
+                    <!-- Third Insert -->	
+                    <td><p-splitButton label="Actions" [model]="AreasOfApplicationItems"	
+                            (onDropdownClick)="HandleActionsClickAreasOfApplication(areasOfApplication,'AreasOfApplication')"	
+                            styleClass="p-button-raised mr-2 mb-2"></p-splitButton></td>	
+                </tr>	
+            </ng-template>	
+        </p-table>	
+    </p-card>	
+</ng-template>

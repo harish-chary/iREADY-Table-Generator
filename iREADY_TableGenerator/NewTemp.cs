@@ -1,0 +1,34 @@
+﻿//#region ClassName
+
+
+//[HttpGet("GetAllClassName")]
+//public IResponseData<List<ClassName>> GetAllClassName()
+//{
+//    return _VariableNameService.GetAllClassName();
+//}
+
+//[HttpPost("InsertClassName")]
+//public virtual IResponseData<bool> InsertClassName(ClassName VariableName)
+//{
+//    return _VariableNameService.InsertClassName(VariableName);
+//}
+
+//[HttpPost("UpdateClassName")]
+//public virtual IResponseData<bool> UpdateClassName(ClassName VariableName)
+//{
+//    return _VariableNameService.UpdateClassName(VariableName);
+//}
+
+//[HttpPost("DeleteClassNameById")]
+//public virtual IResponseData<bool> DeleteClassNameById(string id, string modifiedBy, bool isactive)
+//{
+//    return _VariableNameService.DeleteClassNameById(id, modifiedBy, isactive);
+//}
+
+////[HttpPost("UnDeleteClassNameById")]
+////public virtual IResponseData<bool> UnDeleteClassNameById(string id, string modifiedBy)
+////{
+////    return _VariableName.UnDeleteClassNameById(id, modifiedBy);
+////}
+
+//#endregion

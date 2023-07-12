@@ -1,0 +1,33 @@
+#region AreasOfApplication
+
+[HttpGet("GetAllAreasOfApplication")]
+public IResponseData<List<AreasOfApplication>> GetAllAreasOfApplication()
+{
+    return _areasOfApplicationService.GetAllAreasOfApplication();
+}
+
+[HttpPost("InsertAreasOfApplication")]
+public virtual IResponseData<bool> InsertAreasOfApplication(AreasOfApplication areasOfApplication)
+{
+    return _areasOfApplicationService.InsertAreasOfApplication(areasOfApplication);
+}
+
+[HttpPost("UpdateAreasOfApplication")]
+public virtual IResponseData<bool> UpdateAreasOfApplication(AreasOfApplication areasOfApplication)
+{
+    return _areasOfApplicationService.UpdateAreasOfApplication(areasOfApplication);
+}
+
+[HttpPost("DeleteAreasOfApplicationById")]
+public virtual IResponseData<bool> DeleteAreasOfApplicationById(string id, string modifiedBy, bool isactive)
+{
+    return _areasOfApplicationService.DeleteAreasOfApplicationById(id, modifiedBy, isactive);
+}
+
+//[HttpPost("UnDeleteAreasOfApplicationById")]
+//public virtual IResponseData<bool> UnDeleteAreasOfApplicationById(string id, string modifiedBy)
+//{
+//    return _areasOfApplication.UnDeleteAreasOfApplicationById(id, modifiedBy);
+//}
+
+#endregion

@@ -1,0 +1,10 @@
+export class TableName {
+
+    //insertHere
+
+    isDelete: boolean;
+    createdBy: string;
+    createdDate: string;
+    modifiedBy: string;
+    modifiedDate: string | null;
+}

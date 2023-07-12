@@ -1,0 +1,11 @@
+export class AreasOfApplication {
+
+    areasOfApplicationName: string;
+    description: string;
+
+    isDelete: boolean;
+    createdBy: string;
+    createdDate: string;
+    modifiedBy: string;
+    modifiedDate: string | null;
+}
